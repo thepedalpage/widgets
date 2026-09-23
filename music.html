@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cozy Sounds</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8;--mid:#F8B4C8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:center;padding:2vw}
+.card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:5vw;width:100%;color:var(--text);position:relative;overflow:hidden;text-align:center}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
+.vinyl{width:34vw;height:34vw;margin:0 auto 3vw;border-radius:50%;background:repeating-radial-gradient(circle,#5a3d48 0 1.2vw,#6d4b58 1.2vw 2vw);position:relative;box-shadow:0 1.5vw 4vw rgba(240,98,146,.3)}
+.vinyl:after{content:"♥";position:absolute;inset:0;margin:auto;width:13vw;height:13vw;border-radius:50%;background:var(--digit);color:#fff;font-size:6vw;display:flex;align-items:center;justify-content:center}
+.playing .vinyl{animation:spin 4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.notes{position:absolute;top:8vw;left:10vw;font-size:5vw;color:var(--digit);opacity:0}
+.playing .notes{animation:fl 2.5s ease-in-out infinite}
+.notes.n2{left:auto;right:12vw;top:14vw;animation-delay:1.2s!important}
+@keyframes fl{0%{opacity:0;transform:translateY(3vw)}40%{opacity:1}100%{opacity:0;transform:translateY(-6vw)}}
+.title{font-size:5.5vw;font-weight:600;color:var(--digit);position:relative}
+.sub{font-size:3.6vw;margin-bottom:3vw;position:relative}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;margin-bottom:3.5vw;position:relative}
+.mode{background:var(--soft);border:none;border-radius:4vw;padding:2.5vw 0;font-family:inherit;font-size:3.6vw;color:var(--text);cursor:pointer}
+.mode.on{background:var(--digit);color:#fff}
+.ctrl{display:flex;align-items:center;gap:3vw;position:relative}
+.play{width:14vw;height:14vw;border-radius:50%;border:none;background:var(--digit);color:#fff;font-size:6vw;cursor:pointer;flex:none}
+input[type=range]{flex:1;accent-color:var(--digit)}
+.vol{font-size:4vw}
+.tabs{display:flex;gap:2vw;justify-content:center;margin-bottom:3vw;position:relative}
+.tab{background:var(--soft);border:none;border-radius:5vw;padding:2vw 4vw;font-family:inherit;font-size:3.6vw;color:var(--text);cursor:pointer}
+.tab.on{background:var(--digit);color:#fff}
+.hide{display:none!important}
+.sp{position:relative}
+.sp input{width:100%;border:.6vw solid var(--mid);border-radius:4vw;padding:2.5vw 3vw;font-family:inherit;font-size:3.4vw;color:var(--text);background:#fff;outline:none}
+.sp .row{display:flex;gap:2vw;margin-top:2vw}
+.sp button{flex:1;border:none;border-radius:4vw;padding:2.5vw;font-family:inherit;font-size:3.6vw;cursor:pointer;background:var(--digit);color:#fff}
+.sp button.alt{background:var(--soft);color:var(--text)}
+.sp .hint{font-size:3.1vw;margin:2vw 0}
+.sp iframe{width:100%;height:80vw;max-height:352px;border:0;border-radius:4vw;margin-top:2vw}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card" id="card">
+ <div class="tabs"><button class="tab on" data-t="cozy">🎵 Cozy Sounds</button><button class="tab" data-t="sp">💿 My Playlist</button></div>
+ <div id="cozy"><div class="notes">♪</div><div class="notes n2">♫</div>
+ <div class="vinyl"></div>
+ <div class="title">Cozy Sounds</div>
+ <div class="sub" id="sub">tap play to relax ♡</div>
+ <div class="modes">
+  <button class="mode on" data-m="rain">🌧️ Rain</button>
+  <button class="mode" data-m="lofi">🎹 Lofi</button>
+  <button class="mode" data-m="calm">🌙 Calm</button>
+ </div>
+ <div class="ctrl"><button class="play" id="play" aria-label="Play">▶</button><span class="vol">🔈</span><input id="vol" type="range" min="0" max="100" value="60" aria-label="Volume"><span class="vol">🔊</span></div>
+ </div>
+ <div id="sp" class="sp hide">
+  <div class="title">My Playlist</div>
+  <div id="spForm"><div class="hint">Want your own music? Paste a Spotify playlist, album or song link ♡</div>
+   <input id="spLink" placeholder="https://open.spotify.com/playlist/..." aria-label="Spotify link">
+   <div class="row"><button id="spSave">Add playlist</button></div></div>
+  <div id="spPlayer" class="hide"><iframe id="spFrame" title="Spotify player" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+   <div class="row"><button class="alt" id="spChange">Change playlist</button></div></div>
+ </div>
+</div>
+<script>
+let ctx,master,nodes=[],timer=null,mode='rain',on=false;
+const card=document.getElementById('card'),btn=document.getElementById('play'),sub=document.getElementById('sub');
+const labels={rain:'soft rain falling ☔',lofi:'gentle lofi chords 🎹',calm:'calm night hum 🌙'};
+function noise(type){const len=ctx.sampleRate*2,b=ctx.createBuffer(1,len,ctx.sampleRate),d=b.getChannelData(0);let last=0;
+ for(let i=0;i<len;i++){const w=Math.random()*2-1;if(type==='brown'){last=(last+0.02*w)/1.02;d[i]=last*3.5}else d[i]=w}
+ const s=ctx.createBufferSource();s.buffer=b;s.loop=true;return s}
+function stopAll(){nodes.forEach(n=>{try{n.stop()}catch(e){}try{n.disconnect()}catch(e){}});nodes=[];if(timer){clearInterval(timer);timer=null}}
+function rain(){const n=noise('white'),hp=ctx.createBiquadFilter(),lp=ctx.createBiquadFilter(),g=ctx.createGain();
+ hp.type='highpass';hp.frequency.value=400;lp.type='lowpass';lp.frequency.value=3500;g.gain.value=.35;
+ n.connect(hp).connect(lp).connect(g).connect(master);n.start();nodes.push(n,hp,lp,g);
+ const b=noise('brown'),g2=ctx.createGain();g2.gain.value=.5;b.connect(g2).connect(master);b.start();nodes.push(b,g2)}
+function calm(){const b=noise('brown'),lp=ctx.createBiquadFilter(),g=ctx.createGain();lp.type='lowpass';lp.frequency.value=600;g.gain.value=.8;
+ b.connect(lp).connect(g).connect(master);b.start();nodes.push(b,lp,g);
+ [110,164.8].forEach(f=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type='sine';o.frequency.value=f;og.gain.value=.03;o.connect(og).connect(master);o.start();nodes.push(o,og)})}
+function lofi(){const chords=[[261.6,329.6,392,493.9],[220,261.6,329.6,392],[174.6,220,261.6,329.6],[196,246.9,293.7,349.2]];let i=0;
+ const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1200;lp.connect(master);nodes.push(lp);
+ const crackle=noise('white'),cg=ctx.createGain(),chp=ctx.createBiquadFilter();chp.type='highpass';chp.frequency.value=5000;cg.gain.value=.015;crackle.connect(chp).connect(cg).connect(master);crackle.start();nodes.push(crackle,chp,cg);
+ const play=()=>{const t=ctx.currentTime;chords[i%4].forEach((f,k)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;o.detune.value=(Math.random()-.5)*8;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.08+k*.04);g.gain.exponentialRampToValueAtTime(.001,t+2.3);o.connect(g).connect(lp);o.start(t);o.stop(t+2.4)});i++};
+ play();timer=setInterval(play,2400)}
+function start(){stopAll();({rain,lofi,calm})[mode]();sub.textContent=labels[mode]}
+btn.onclick=()=>{if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=.6;master.connect(ctx.destination)}
+ on=!on;if(on){ctx.resume();start();btn.textContent='❚❚';card.classList.add('playing')}else{stopAll();btn.textContent='▶';card.classList.remove('playing');sub.textContent='tap play to relax ♡'}};
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{document.querySelectorAll('.mode').forEach(x=>x.classList.remove('on'));b.classList.add('on');mode=b.dataset.m;if(on)start()});
+document.getElementById('vol').oninput=e=>{if(master)master.gain.value=e.target.value/100};
+
+function toEmbed(u){const m=String(u||'').match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(?:embed\/)?(playlist|album|track|episode|show|artist)\/([A-Za-z0-9]+)/);return m?`https://open.spotify.com/embed/${m[1]}/${m[2]}?theme=0`:null}
+const spF=document.getElementById('spForm'),spP=document.getElementById('spPlayer'),spFr=document.getElementById('spFrame');
+function showSp(link){const e=toEmbed(link);if(!e){spF.classList.remove('hide');spP.classList.add('hide');return false}spFr.src=e;spF.classList.add('hide');spP.classList.remove('hide');return true}
+let saved=new URLSearchParams(location.search).get('spotify');try{saved=localStorage.getItem('cozy_spotify')||saved}catch(e){}
+if(saved)showSp(saved);
+document.getElementById('spSave').onclick=()=>{const v=document.getElementById('spLink').value.trim();if(showSp(v)){try{localStorage.setItem('cozy_spotify',v)}catch(e){}}else{document.getElementById('spLink').value='';document.getElementById('spLink').placeholder='Please paste a Spotify link ♡'}};
+document.getElementById('spChange').onclick=()=>{spFr.src='about:blank';spF.classList.remove('hide');spP.classList.add('hide');try{localStorage.removeItem('cozy_spotify')}catch(e){}};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+ const sp=t.dataset.t==='sp';document.getElementById('cozy').classList.toggle('hide',sp);document.getElementById('sp').classList.toggle('hide',!sp);
+ if(sp&&on){btn.click()}});
+</script></body></html>

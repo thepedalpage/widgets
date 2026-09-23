@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Focus Timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8;--mid:#F8B4C8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:center;padding:2vw}
+.card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:5vw;width:100%;color:var(--text);text-align:center;position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
+.tabs{display:flex;gap:2vw;justify-content:center;margin-bottom:4vw;position:relative}
+.tab{background:var(--soft);border:none;border-radius:5vw;padding:2vw 3.5vw;font-family:inherit;font-size:3.4vw;color:var(--text);cursor:pointer}
+.tab.on{background:var(--digit);color:#fff}
+.ring{position:relative;width:56vw;height:56vw;margin:0 auto}
+svg{transform:rotate(-90deg);width:100%;height:100%}
+.time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.time b{font-size:13vw;font-weight:600;color:var(--digit);line-height:1}
+.time span{font-size:3.2vw;margin-top:1vw}
+.ctrl{display:flex;gap:3vw;justify-content:center;margin-top:4vw;position:relative}
+.btn{border:none;border-radius:5vw;padding:3vw 7vw;font-family:inherit;font-size:4vw;cursor:pointer;background:var(--digit);color:#fff}
+.btn.alt{background:var(--soft);color:var(--text)}
+.count{font-size:3.4vw;margin-top:3vw;position:relative}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card">
+ <div class="tabs">
+  <button class="tab on" data-m="25">🌸 Focus 25</button>
+  <button class="tab" data-m="5">☕ Break 5</button>
+  <button class="tab" data-m="50">📚 Deep 50</button>
+ </div>
+ <div class="ring">
+  <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="#FFF5F8" stroke-width="9"/>
+  <circle id="prog" cx="50" cy="50" r="44" fill="none" stroke="#F06292" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="0"/></svg>
+  <div class="time"><b id="t">25:00</b><span id="lbl">ready when you are ♡</span></div>
+ </div>
+ <div class="ctrl"><button class="btn" id="go">Start</button><button class="btn alt" id="rs">Reset</button></div>
+ <div class="count" id="done">🌷 sessions today: 0</div>
+</div>
+<script>
+let total=25*60,left=total,timer=null,running=false,sessions=0;
+const T=document.getElementById('t'),P=document.getElementById('prog'),L=document.getElementById('lbl'),GO=document.getElementById('go'),D=document.getElementById('done');
+const C=2*Math.PI*44;
+function draw(){const m=Math.floor(left/60),s=left%60;T.textContent=m+':'+String(s).padStart(2,'0');P.style.strokeDashoffset=C*(1-left/total)}
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.18,.36].forEach((d,i)=>{const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=[880,1046,1318][i];g.gain.setValueAtTime(0,a.currentTime+d);g.gain.linearRampToValueAtTime(.2,a.currentTime+d+.02);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d+.5);o.connect(g).connect(a.destination);o.start(a.currentTime+d);o.stop(a.currentTime+d+.55)})}catch(e){}}
+function tick(){left--;if(left<=0){clearInterval(timer);timer=null;running=false;GO.textContent='Start';left=0;draw();L.textContent='done! well done ♡';sessions++;D.textContent='🌷 sessions today: '+sessions;beep();return}draw()}
+GO.onclick=function(){if(running){clearInterval(timer);timer=null;running=false;GO.textContent='Resume';L.textContent='paused ♡'}else{if(left===0)left=total;running=true;GO.textContent='Pause';L.textContent='stay with it ♡';timer=setInterval(tick,1000)}};
+document.getElementById('rs').onclick=function(){clearInterval(timer);timer=null;running=false;left=total;GO.textContent='Start';L.textContent='ready when you are ♡';draw()};
+document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+ clearInterval(timer);timer=null;running=false;GO.textContent='Start';total=+b.dataset.m*60;left=total;L.textContent='ready when you are ♡';draw()}});
+draw();
+</script></body></html>

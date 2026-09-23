@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Daily Quote</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Lora:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent;height:100%}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;align-items:flex-start;justify-content:center;padding:2vw}
+.card{background:var(--bg);border-radius:6vw;padding:7vw 6vw 6vw;width:100%;text-align:center;color:var(--text);position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.35;top:-10vw;right:-8vw}
+.tag{display:inline-block;background:var(--digit);color:#fff;font-size:3.6vw;font-weight:500;border-radius:5vw;padding:1vw 4vw;position:relative}
+.q{font-family:'Lora',Georgia,serif;font-style:italic;font-size:6.2vw;line-height:1.45;margin:5vw 0 4vw;position:relative;min-height:18vw;transition:opacity .4s}
+.heart{color:var(--digit);font-size:6vw;position:relative}
+.next{position:relative;margin-top:3vw;border:0;background:#fff;color:var(--digit);font-family:inherit;font-size:3.6vw;font-weight:500;border-radius:5vw;padding:1.6vw 5vw;cursor:pointer}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card"><span class="tag">♡ today's reminder</span><div class="q" id="q"></div><div class="heart">♡</div><button class="next" id="n">another one ✨</button></div>
+<script>
+const Q=["Small steps every day add up to big things.","You are allowed to rest and still be amazing.","Done is better than perfect.","Be proud of how far you have come.","Your pace is still progress.","Plan it softly, do it bravely.","A calm mind makes beautiful choices.","Today is a fresh page. Make it cute.","Little habits build a lovely life.","Believe in the girl you are becoming.","Focus on the step, not the whole staircase.","Kindness to yourself counts too.","You can do hard things, gently.","Good things take time. Keep going.","Make today a little better than yesterday.","Your dreams are worth the effort.","Slow progress is still progress.","Stay soft, stay strong.","One task at a time, one day at a time.","You are building something beautiful."];
+const p=new URLSearchParams(location.search);
+['bg','digit','text'].forEach(k=>{const v=p.get(k);if(v&&/^[0-9a-fA-F]{6}$/.test(v))document.documentElement.style.setProperty('--'+k,'#'+v)});
+const d=new Date();let i=(d.getFullYear()*372+d.getMonth()*31+d.getDate())%Q.length;
+const el=document.getElementById('q');function show(){el.style.opacity=0;setTimeout(()=>{el.textContent='“'+Q[i]+'”';el.style.opacity=1},200)}
+show();document.getElementById('n').onclick=()=>{i=(i+1)%Q.length;show()};
+</script></body></html>

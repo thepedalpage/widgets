@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Quick Links</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8;--mid:#F8B4C8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:center;padding:2vw}
+.card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:4.5vw;width:100%;color:var(--text);position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
+.head{display:flex;align-items:center;justify-content:space-between;position:relative;margin-bottom:3vw}
+h1{font-size:4.6vw;font-weight:600;color:var(--digit)}
+.edit{background:var(--soft);border:none;border-radius:4vw;padding:1.6vw 3vw;font-family:inherit;font-size:3vw;color:var(--text);cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2vw;position:relative}
+@media(max-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+a.tile,div.tile{background:#fff;border-radius:4.5vw;padding:3vw 1.5vw;text-align:center;text-decoration:none;color:var(--text);display:block;border:.5vw solid transparent}
+a.tile:hover{border-color:var(--mid)}
+.ico{font-size:7vw;line-height:1}
+.nm{font-size:2.9vw;margin-top:1vw;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.add{background:var(--soft);cursor:pointer}
+form{position:relative;margin-top:3vw;display:none}
+form.on{display:block}
+.row{display:grid;grid-template-columns:14vw 1fr 1fr auto;gap:1.5vw;margin-bottom:1.5vw;align-items:center}
+input{width:100%;border:.5vw solid var(--mid);border-radius:3vw;padding:1.8vw;font-family:inherit;font-size:3vw;color:var(--text);background:#fff;outline:none}
+.del{background:var(--soft);border:none;border-radius:3vw;color:var(--digit);font-size:3.4vw;cursor:pointer;padding:1.6vw 2.4vw}
+.actions{display:flex;gap:2vw;margin-top:2vw}
+.actions button{flex:1;border:none;border-radius:4vw;padding:2.4vw;font-family:inherit;font-size:3.2vw;cursor:pointer;background:var(--digit);color:#fff}
+.actions .alt{background:var(--soft);color:var(--text)}
+.hint{font-size:2.7vw;text-align:center;margin-top:2vw;opacity:.8;position:relative}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card">
+ <div class="head"><h1>🎀 Quick Links ♡</h1><button class="edit" id="edit">edit</button></div>
+ <div class="grid" id="grid"></div>
+ <form id="form">
+  <div id="rows"></div>
+  <div class="actions"><button type="button" id="addRow" class="alt">+ Add link</button><button type="button" id="save">Save</button></div>
+  <div class="hint">Tip: pick any emoji as the icon ♡</div>
+ </form>
+</div>
+<script>
+var DEF=[["📧","Gmail","https://mail.google.com"],["📁","Drive","https://drive.google.com"],["🎨","Canva","https://www.canva.com"],["🤍","ChatGPT","https://chatgpt.com"],["▶️","YouTube","https://www.youtube.com"],["📌","Pinterest","https://www.pinterest.com"],["🎵","Spotify","https://open.spotify.com"],["📝","Notion","https://www.notion.com/templates"]];
+var P=new URLSearchParams(location.search);
+['bg','digit','text'].forEach(function(k){var v=P.get(k);if(v&&/^[0-9a-fA-F]{6}$/.test(v))document.documentElement.style.setProperty('--'+k,'#'+v)});
+function load(){try{var s=JSON.parse(localStorage.getItem('links')||'null');if(s&&s.length)return s}catch(e){}return DEF.slice()}
+function save(v){try{localStorage.setItem('links',JSON.stringify(v))}catch(e){}}
+var links=load();
+var grid=document.getElementById('grid'),rows=document.getElementById('rows'),form=document.getElementById('form');
+function draw(){
+ grid.innerHTML='';
+ links.forEach(function(l){
+  var a=document.createElement('a');a.className='tile';a.href=l[2];a.target='_blank';a.rel='noopener';
+  a.innerHTML='<div class="ico">'+l[0]+'</div><div class="nm">'+l[1]+'</div>';
+  grid.appendChild(a)});
+ var add=document.createElement('div');add.className='tile add';
+ add.innerHTML='<div class="ico">➕</div><div class="nm">add</div>';
+ add.onclick=function(){openForm();addRow('🔗','','')};
+ grid.appendChild(add);
+}
+function addRow(i,n,u){
+ var r=document.createElement('div');r.className='row';
+ r.innerHTML='<input value="'+i+'" aria-label="Icon"><input value="'+n+'" placeholder="Name" aria-label="Name"><input value="'+u+'" placeholder="https://..." aria-label="Link"><button type="button" class="del" aria-label="Remove">×</button>';
+ r.querySelector('.del').onclick=function(){r.remove()};
+ rows.appendChild(r);
+}
+function openForm(){
+ if(!form.classList.contains('on')){rows.innerHTML='';links.forEach(function(l){addRow(l[0],l[1],l[2])});form.classList.add('on')}
+}
+document.getElementById('edit').onclick=function(){
+ if(form.classList.contains('on')){form.classList.remove('on')}else{openForm()}};
+document.getElementById('addRow').onclick=function(){addRow('🔗','','')};
+document.getElementById('save').onclick=function(){
+ var out=[];
+ rows.querySelectorAll('.row').forEach(function(r){
+  var v=r.querySelectorAll('input');
+  var ic=v[0].value.trim()||'🔗',nm=v[1].value.trim(),u=v[2].value.trim();
+  if(!nm||!u)return;
+  if(!/^https?:\/\//i.test(u))u='https://'+u;
+  out.push([ic,nm,u])});
+ if(out.length){links=out;save(links);draw()}
+ form.classList.remove('on');
+};
+draw();
+</script></body></html>

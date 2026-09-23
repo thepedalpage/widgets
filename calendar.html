@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8;--mid:#F8B4C8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:center;padding:2vw}
+.card{background:var(--bg);border-radius:7vw;padding:4vw 4vw 3vw;width:100%;color:var(--text);position:relative;overflow:hidden;border:1vw dashed var(--mid)}
+.b{position:absolute;border-radius:50%;background:#fff;opacity:.4}
+.b1{width:30vw;height:30vw;top:-12vw;right:-8vw}.b2{width:18vw;height:18vw;bottom:-7vw;left:-5vw}
+.spark{position:absolute;color:var(--digit);animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+.head{background:var(--digit);color:#fff;border-radius:5vw;display:flex;align-items:center;justify-content:space-between;padding:2vw 2.5vw;position:relative;margin-bottom:3vw}
+.title{text-align:center;line-height:1.1}
+.title b{display:block;font-size:6.2vw;font-weight:600}
+.title span{font-size:3.6vw;opacity:.9}
+button{background:#fff;border:none;color:var(--digit);font-family:inherit;font-size:5.5vw;font-weight:600;width:9vw;height:9vw;border-radius:50%;cursor:pointer;line-height:1}
+button:active{transform:scale(.9)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1.4vw;position:relative}
+.wd{font-size:3.1vw;font-weight:600;text-align:center;color:var(--digit);padding-bottom:.8vw}
+.day{background:var(--soft);border-radius:50%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:3.8vw;font-weight:500;position:relative}
+.day.empty{background:transparent}
+.day.weekend{background:#fff;color:var(--digit)}
+.day.today{background:var(--digit);color:#fff;animation:pop 2s ease-in-out infinite}
+.day.today:after{content:"♥";position:absolute;top:-1.8vw;right:-.8vw;font-size:3.6vw;color:var(--digit);text-shadow:0 0 .6vw #fff}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.foot{text-align:center;font-size:3.6vw;font-weight:500;margin-top:3vw;position:relative;background:var(--soft);border-radius:5vw;padding:1.5vw}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card">
+ <div class="b b1"></div><div class="b b2"></div>
+ <div class="spark" style="top:3vw;left:6vw;font-size:3vw">✦</div>
+ <div class="spark" style="bottom:12vw;right:3vw;font-size:3.5vw;animation-delay:.8s">✦</div>
+ <div class="head"><button id="prev" aria-label="Previous month">‹</button><div class="title" id="title"></div><button id="next" aria-label="Next month">›</button></div>
+ <div class="grid" id="grid"></div>
+ <div class="foot" id="foot"></div>
+</div>
+<script>
+const p=new URLSearchParams(location.search);const monStart=p.get('start')==='mon';
+['bg','digit','text'].forEach(k=>{const v=p.get(k);if(v&&/^[0-9a-fA-F]{6}$/.test(v))document.documentElement.style.setProperty('--'+k,'#'+v)});
+const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const emo=['❄️','💌','🌷','🌸','🌼','🍓','🍉','🌻','🍂','🎃','🍁','🎄'];
+let wds=['S','M','T','W','T','F','S'];if(monStart)wds=[...wds.slice(1),wds[0]];
+let view=new Date();view.setDate(1);
+function draw(){
+ const now=new Date(),y=view.getFullYear(),m=view.getMonth();
+ document.getElementById('title').innerHTML=`<b>${emo[m]} ${months[m]}</b><span>${y}</span>`;
+ let first=new Date(y,m,1).getDay();if(monStart)first=(first+6)%7;
+ const total=new Date(y,m+1,0).getDate();
+ let h=wds.map(w=>`<div class="wd">${w}</div>`).join('');
+ for(let i=0;i<first;i++)h+='<div class="day empty"></div>';
+ for(let d=1;d<=total;d++){const dow=new Date(y,m,d).getDay();const isT=d===now.getDate()&&m===now.getMonth()&&y===now.getFullYear();
+  h+=`<div class="day${isT?' today':''}${dow===0||dow===6?' weekend':''}">${d}</div>`;}
+ document.getElementById('grid').innerHTML=h;
+ document.getElementById('foot').textContent='♡ Today is '+now.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})+' ♡';
+}
+document.getElementById('prev').onclick=()=>{view.setMonth(view.getMonth()-1);draw()};
+document.getElementById('next').onclick=()=>{view.setMonth(view.getMonth()+1);draw()};
+draw();setInterval(()=>{if(!document.hidden)draw()},60000);
+</script></body></html>

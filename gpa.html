@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GPA Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8;--mid:#F8B4C8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:center;padding:2vw}
+.card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:5vw;width:100%;color:var(--text);position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
+h1{font-size:5.5vw;color:var(--digit);text-align:center;font-weight:600;position:relative}
+.sub{font-size:3.2vw;text-align:center;margin-bottom:3vw;position:relative}
+.head,.row{display:grid;grid-template-columns:1fr 24vw 16vw 8vw;gap:1.6vw;align-items:center;position:relative}
+.head{font-size:2.9vw;padding:0 1vw 1vw}
+.row{margin-bottom:1.6vw}
+input,select{width:100%;border:.6vw solid var(--mid);border-radius:3vw;padding:2vw;font-family:inherit;font-size:3.3vw;color:var(--text);background:#fff;outline:none}
+.del{background:var(--soft);border:none;border-radius:3vw;color:var(--digit);font-size:4vw;cursor:pointer;padding:1.6vw 0}
+.add{width:100%;background:var(--soft);border:none;border-radius:4vw;padding:2.6vw;font-family:inherit;font-size:3.6vw;color:var(--digit);cursor:pointer;margin-top:1.5vw;position:relative}
+.res{background:var(--digit);color:#fff;border-radius:5vw;padding:3.5vw;text-align:center;margin-top:3.5vw;position:relative}
+.res b{display:block;font-size:11vw;line-height:1.1;font-weight:600}
+.res span{font-size:3.4vw;opacity:.95}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card">
+ <h1>🎓 GPA Calculator</h1>
+ <div class="sub">Add your subjects, grades and credit hours ♡</div>
+ <div class="head"><div>Subject</div><div>Grade</div><div>Credits</div><div></div></div>
+ <div id="rows"></div>
+ <button class="add" id="add">+ Add subject</button>
+ <div class="res"><b id="gpa">0.00</b><span id="msg">your GPA appears here</span></div>
+</div>
+<script>
+var P=new URLSearchParams(location.search);
+var scale=(P.get('scale')||'4').trim();
+var G4=[["A+",4],["A",4],["A-",3.7],["B+",3.3],["B",3],["B-",2.7],["C+",2.3],["C",2],["C-",1.7],["D",1],["F",0]];
+var G5=[["A+",5],["A",5],["A-",4.7],["B+",4.3],["B",4],["B-",3.7],["C+",3.3],["C",3],["C-",2.7],["D",2],["F",0]];
+var G=scale==='5'?G5:G4, maxG=scale==='5'?5:4;
+var rows=document.getElementById('rows');
+function calc(){
+ var pts=0,cr=0;
+ rows.querySelectorAll('.row').forEach(function(r){
+  var g=parseFloat(r.querySelector('select').value);
+  var c=parseFloat(r.querySelectorAll('input')[1].value)||0;
+  pts+=g*c;cr+=c});
+ var gpa=cr?pts/cr:0;
+ document.getElementById('gpa').textContent=gpa.toFixed(2);
+ var m=document.getElementById('msg');
+ m.textContent=!cr?'add credits to see your GPA':gpa>=maxG*0.9?'amazing work ♡':gpa>=maxG*0.75?'doing great, keep going ♡':gpa>=maxG*0.6?'steady progress ♡':'one step at a time ♡';
+}
+function addRow(){
+ var r=document.createElement('div');r.className='row';
+ r.innerHTML='<input placeholder="Subject" aria-label="Subject">'+
+ '<select aria-label="Grade">'+G.map(function(g){return '<option value="'+g[1]+'">'+g[0]+'</option>'}).join('')+'</select>'+
+ '<input type="number" min="0" step="1" value="3" aria-label="Credit hours">'+
+ '<button class="del" aria-label="Remove subject">×</button>';
+ r.querySelector('.del').onclick=function(){r.remove();calc()};
+ r.querySelectorAll('input,select').forEach(function(e){e.addEventListener('input',calc)});
+ rows.appendChild(r);calc();
+}
+document.getElementById('add').onclick=addRow;
+addRow();addRow();addRow();
+</script></body></html>

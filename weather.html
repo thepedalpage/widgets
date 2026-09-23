@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent;height:100%}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;align-items:flex-start;justify-content:center;padding:2vw}
+.card{background:var(--bg);border-radius:6vw;padding:4vw 4vw 2.5vw;width:100%;color:var(--text);position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.35;top:-10vw;right:-8vw}
+.top{display:flex;align-items:center;gap:3vw;position:relative}
+.icon{font-size:13vw;line-height:1;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2vw)}}
+.temp{font-size:10vw;font-weight:600;color:var(--digit);line-height:1}
+.temp small{font-size:4.5vw;font-weight:500}
+.desc{font-size:4vw;font-weight:500;margin-top:.8vw}
+.city{font-size:3.2vw;opacity:.85}
+.hl{margin-left:auto;text-align:right;font-size:3.4vw;line-height:1.7}
+.hl b{color:var(--digit);font-weight:500}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:1.6vw;margin-top:3.5vw;position:relative}
+.day{background:var(--soft);border-radius:4vw;padding:2vw 0;text-align:center}
+.day.today{background:var(--digit);color:#fff}
+.day.today .t{color:#fff}
+.d{font-size:3.2vw;font-weight:500}
+.e{font-size:5.5vw;margin:.8vw 0}
+.t{font-size:3.2vw;color:var(--digit);font-weight:500}
+.credit{font-size:2.6vw;text-align:right;margin-top:2vw;opacity:.7;position:relative}
+.credit a{color:inherit}
+.cityrow{display:flex;gap:2vw;align-items:center;margin-top:2.5vw;position:relative}
+.cityrow input{flex:1;border:.6vw solid var(--mid);border-radius:4vw;padding:2.2vw 3vw;font-family:inherit;font-size:3.2vw;color:var(--text);background:#fff;outline:none}
+.cityrow button{border:none;border-radius:4vw;padding:2.2vw 4vw;font-family:inherit;font-size:3.2vw;background:var(--digit);color:#fff;cursor:pointer}
+.chg{background:none;border:none;color:var(--text);font-family:inherit;font-size:3vw;text-decoration:underline;cursor:pointer;margin-top:2vw;opacity:.85;position:relative}
+.hits{position:relative;margin-top:1.5vw;display:flex;flex-wrap:wrap;gap:1.5vw}
+.hits button{background:var(--soft);border:none;border-radius:3.5vw;padding:1.8vw 3vw;font-family:inherit;font-size:3vw;color:var(--text);cursor:pointer}
+.msg{font-size:4vw;text-align:center;padding:3vw}
+</style>
+<style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head>
+<body>
+<div class="card" id="card"><p class="msg">Loading weather... ☁️</p></div>
+<script>
+const p=new URLSearchParams(location.search);
+const unitF=(p.get('unit')||'c').toLowerCase()==='f';
+['bg','digit','text'].forEach(k=>{const v=p.get(k);if(v&&/^[0-9a-fA-F]{6}$/.test(v))document.documentElement.style.setProperty('--'+k,'#'+v)});
+const TZ={"Asia/Karachi":[24.86,67.01,"Karachi"],"Asia/Kolkata":[28.61,77.21,"New Delhi"],"Asia/Calcutta":[28.61,77.21,"New Delhi"],"Asia/Dhaka":[23.81,90.41,"Dhaka"],"Asia/Dubai":[25.2,55.27,"Dubai"],"Asia/Riyadh":[24.71,46.68,"Riyadh"],"Asia/Qatar":[25.29,51.53,"Doha"],"Asia/Kuwait":[29.38,47.99,"Kuwait City"],"Asia/Bahrain":[26.23,50.59,"Manama"],"Asia/Muscat":[23.59,58.41,"Muscat"],"Asia/Tehran":[35.69,51.39,"Tehran"],"Asia/Baghdad":[33.31,44.36,"Baghdad"],"Asia/Kabul":[34.56,69.21,"Kabul"],"Asia/Kathmandu":[27.72,85.32,"Kathmandu"],"Asia/Colombo":[6.93,79.86,"Colombo"],"Asia/Singapore":[1.35,103.82,"Singapore"],"Asia/Kuala_Lumpur":[3.14,101.69,"Kuala Lumpur"],"Asia/Jakarta":[-6.21,106.85,"Jakarta"],"Asia/Manila":[14.6,120.98,"Manila"],"Asia/Bangkok":[13.76,100.5,"Bangkok"],"Asia/Ho_Chi_Minh":[10.82,106.63,"Ho Chi Minh City"],"Asia/Hong_Kong":[22.32,114.17,"Hong Kong"],"Asia/Shanghai":[31.23,121.47,"Shanghai"],"Asia/Taipei":[25.03,121.57,"Taipei"],"Asia/Seoul":[37.57,126.98,"Seoul"],"Asia/Tokyo":[35.68,139.69,"Tokyo"],"Asia/Jerusalem":[31.77,35.21,"Jerusalem"],"Asia/Amman":[31.95,35.93,"Amman"],"Asia/Beirut":[33.89,35.5,"Beirut"],"Europe/Istanbul":[41.01,28.98,"Istanbul"],"Europe/London":[51.51,-0.13,"London"],"Europe/Dublin":[53.35,-6.26,"Dublin"],"Europe/Paris":[48.86,2.35,"Paris"],"Europe/Berlin":[52.52,13.4,"Berlin"],"Europe/Madrid":[40.42,-3.7,"Madrid"],"Europe/Lisbon":[38.72,-9.14,"Lisbon"],"Europe/Rome":[41.9,12.5,"Rome"],"Europe/Amsterdam":[52.37,4.9,"Amsterdam"],"Europe/Brussels":[50.85,4.35,"Brussels"],"Europe/Zurich":[47.38,8.54,"Zurich"],"Europe/Vienna":[48.21,16.37,"Vienna"],"Europe/Stockholm":[59.33,18.07,"Stockholm"],"Europe/Oslo":[59.91,10.75,"Oslo"],"Europe/Copenhagen":[55.68,12.57,"Copenhagen"],"Europe/Helsinki":[60.17,24.94,"Helsinki"],"Europe/Warsaw":[52.23,21.01,"Warsaw"],"Europe/Prague":[50.08,14.44,"Prague"],"Europe/Budapest":[47.5,19.04,"Budapest"],"Europe/Athens":[37.98,23.73,"Athens"],"Europe/Bucharest":[44.43,26.1,"Bucharest"],"Europe/Kiev":[50.45,30.52,"Kyiv"],"Europe/Kyiv":[50.45,30.52,"Kyiv"],"Europe/Moscow":[55.76,37.62,"Moscow"],"Africa/Cairo":[30.04,31.24,"Cairo"],"Africa/Lagos":[6.52,3.38,"Lagos"],"Africa/Nairobi":[-1.29,36.82,"Nairobi"],"Africa/Johannesburg":[-26.2,28.05,"Johannesburg"],"Africa/Casablanca":[33.57,-7.59,"Casablanca"],"Africa/Accra":[5.6,-0.19,"Accra"],"America/New_York":[40.71,-74.01,"New York"],"America/Detroit":[42.33,-83.05,"Detroit"],"America/Toronto":[43.65,-79.38,"Toronto"],"America/Chicago":[41.88,-87.63,"Chicago"],"America/Denver":[39.74,-104.99,"Denver"],"America/Phoenix":[33.45,-112.07,"Phoenix"],"America/Los_Angeles":[34.05,-118.24,"Los Angeles"],"America/Vancouver":[49.28,-123.12,"Vancouver"],"America/Edmonton":[53.55,-113.49,"Edmonton"],"America/Winnipeg":[49.9,-97.14,"Winnipeg"],"America/Halifax":[44.65,-63.58,"Halifax"],"America/Anchorage":[61.22,-149.9,"Anchorage"],"Pacific/Honolulu":[21.31,-157.86,"Honolulu"],"America/Mexico_City":[19.43,-99.13,"Mexico City"],"America/Bogota":[4.71,-74.07,"Bogota"],"America/Lima":[-12.05,-77.04,"Lima"],"America/Santiago":[-33.45,-70.67,"Santiago"],"America/Sao_Paulo":[-23.55,-46.63,"Sao Paulo"],"America/Argentina/Buenos_Aires":[-34.6,-58.38,"Buenos Aires"],"Australia/Sydney":[-33.87,151.21,"Sydney"],"Australia/Melbourne":[-37.81,144.96,"Melbourne"],"Australia/Brisbane":[-27.47,153.03,"Brisbane"],"Australia/Perth":[-31.95,115.86,"Perth"],"Australia/Adelaide":[-34.93,138.6,"Adelaide"],"Pacific/Auckland":[-36.85,174.76,"Auckland"]};
+function sym(s){
+ if(!s)return['Weather','🌈'];const n=s.replace(/_(day|night|polartwilight)$/,''),night=/_night$/.test(s);
+ if(n==='clearsky')return night?['Clear night','🌙']:['Sunny','☀️'];
+ if(n==='fair')return night?['Mostly clear','🌙']:['Mostly sunny','🌤️'];
+ if(n==='partlycloudy')return['Partly cloudy','⛅'];if(n==='cloudy')return['Cloudy','☁️'];if(n==='fog')return['Foggy','🌫️'];
+ if(/thunder/.test(n))return['Stormy','⛈️'];if(/sleet/.test(n))return['Sleet','🌨️'];if(/snow/.test(n))return['Snowy','❄️'];
+ if(/showers/.test(n))return['Showers','🌦️'];if(/rain/.test(n))return['Rainy','🌧️'];return['Weather','🌈'];
+}
+function loc(){
+ const la=parseFloat(p.get('lat')),lo=parseFloat(p.get('lon'));
+ if(!isNaN(la)&&!isNaN(lo))return{lat:la,lon:lo,name:p.get('name')||''};
+ var sc=savedCity();
+ if(sc&&!isNaN(sc.lat))return{lat:sc.lat,lon:sc.lon,name:sc.name};
+ const tz=Intl.DateTimeFormat().resolvedOptions().timeZone,t=TZ[tz];
+ if(t)return{lat:t[0],lon:t[1],name:p.get('name')||t[2]};
+ const OFF={"-600":[21.31,-157.86,"Honolulu"],"-540":[61.22,-149.9,"Anchorage"],"-480":[34.05,-118.24,"Los Angeles"],"-420":[39.74,-104.99,"Denver"],"-360":[41.88,-87.63,"Chicago"],"-300":[40.71,-74.01,"New York"],"-240":[44.65,-63.58,"Halifax"],"-180":[-23.55,-46.63,"Sao Paulo"],"0":[51.51,-0.13,"London"],"60":[48.86,2.35,"Paris"],"120":[30.04,31.24,"Cairo"],"180":[24.71,46.68,"Riyadh"],"210":[35.69,51.39,"Tehran"],"240":[25.2,55.27,"Dubai"],"270":[34.56,69.21,"Kabul"],"300":[24.86,67.01,"Karachi"],"330":[28.61,77.21,"New Delhi"],"345":[27.72,85.32,"Kathmandu"],"360":[23.81,90.41,"Dhaka"],"420":[13.76,100.5,"Bangkok"],"480":[1.35,103.82,"Singapore"],"540":[35.68,139.69,"Tokyo"],"570":[-34.93,138.6,"Adelaide"],"600":[-33.87,151.21,"Sydney"],"720":[-36.85,174.76,"Auckland"]};
+ const o=String(-new Date().getTimezoneOffset());
+ let best=OFF[o];
+ if(!best){const ks=Object.keys(OFF).map(Number);const n=ks.reduce((a,b)=>Math.abs(b-o)<Math.abs(a-o)?b:a);best=OFF[String(n)]}
+ return{lat:best[0],lon:best[1],name:p.get('name')||best[2]};
+}
+const card=document.getElementById('card');
+const conv=c=>Math.round(unitF?c*9/5+32:c);
+function render(data,L){
+ const ts=data.properties.timeseries,now=ts[0],det=now.data.instant.details;
+ const [txt,ic]=sym((now.data.next_1_hours||now.data.next_6_hours||{}).summary?.symbol_code);
+ const byDay={};
+ ts.forEach(e=>{const d=new Date(e.time),k=d.toLocaleDateString('en-CA');const x=byDay[k]||(byDay[k]={max:-99,min:99,sym:null,h:99,date:d});
+  const t=e.data.instant.details.air_temperature;x.max=Math.max(x.max,t);x.min=Math.min(x.min,t);
+  const s=(e.data.next_6_hours||e.data.next_1_hours||{}).summary?.symbol_code,hr=Math.abs(d.getHours()-12);if(s&&hr<x.h){x.h=hr;x.sym=s}});
+ const keys=Object.keys(byDay).slice(0,5),names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],t0=byDay[keys[0]];
+ const days=keys.map((k,i)=>{const x=byDay[k];return `<div class="day${i===0?' today':''}"><div class="d">${i===0?'Today':names[x.date.getDay()]}</div><div class="e">${sym(x.sym)[1]}</div><div class="t">${conv(x.max)}°</div></div>`}).join('');
+ card.innerHTML=`<div class="top"><div class="icon">${ic}</div>
+  <div><div class="temp">${conv(det.air_temperature)}<small>${unitF?'°F':'°C'}</small></div><div class="desc">${txt}</div>${L.name?`<div class="city">📍 ${L.name}</div>`:''}</div>
+  <div class="hl">High <b>${conv(t0.max)}°</b><br>Low <b>${conv(t0.min)}°</b></div></div>
+  <div class="days">${days}</div>
+  <button class="chg" id="chgCity">📍 change city</button>
+  <div class="credit">Weather data: <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> (CC BY 4.0)</div>`;
+ var cc=document.getElementById('chgCity');if(cc)cc.onclick=function(){picker(L.name||'')};
+}
+
+function saveCity(c){try{localStorage.setItem('wx_city',JSON.stringify(c))}catch(e){}}
+function savedCity(){try{return JSON.parse(localStorage.getItem('wx_city')||'null')}catch(e){return null}}
+var CITIES=null,citiesLoading=false;
+function loadCities(cb){
+ if(CITIES){cb();return}
+ if(citiesLoading)return;
+ citiesLoading=true;
+ var s=document.createElement('script');
+ s.src='cities.js';
+ s.onload=function(){citiesLoading=false;cb()};
+ s.onerror=function(){citiesLoading=false;CITIES=[];cb()};
+ document.head.appendChild(s);
+}
+function picker(pre){
+ card.innerHTML='<div class="msg" style="font-weight:500;color:var(--digit)">📍 Choose your city</div>'+
+ '<div class="cityrow"><input id="q" placeholder="Type a city..." value="'+(pre||'')+'" aria-label="City"><button id="qb">Search</button></div>'+
+ '<div class="hits" id="hits"></div>'+
+ '<button class="chg" id="auto">use my region automatically</button>';
+ var q=document.getElementById('q'),hits=document.getElementById('hits');
+ function find(){
+  var v=q.value.trim().toLowerCase();hits.innerHTML='';
+  if(v.length<2)return;
+  var out=CITIES.filter(function(c){return c[0].toLowerCase().indexOf(v)===0}).slice(0,8);
+  if(!out.length)out=CITIES.filter(function(c){return c[0].toLowerCase().indexOf(v)>-1}).slice(0,8);
+  if(!out.length){hits.innerHTML='<span style="font-size:3vw">City not in the list. Use ?lat=..&lon=..&name=.. in the link.</span>';return}
+  out.forEach(function(c){
+   var b=document.createElement('button');b.textContent=c[0]+' · '+c[1];
+   b.onclick=function(){var obj={name:c[0],lat:c[2],lon:c[3]};saveCity(obj);load()};
+   hits.appendChild(b)});
+ }
+ function safeFind(){ if(!CITIES){hits.innerHTML='<span style="font-size:3vw">loading cities…</span>';loadCities(find);return} find() }
+ q.addEventListener('input',safeFind);document.getElementById('qb').onclick=safeFind;
+ loadCities(function(){ if(q.value.trim().length>1) find() });
+ document.getElementById('auto').onclick=function(){try{localStorage.removeItem('wx_city')}catch(e){};load()};
+}
+async function load(){
+ const L=loc();
+ if(!L){card.innerHTML='<p class="msg">Add your location to the link: ?lat=YOUR_LAT&lon=YOUR_LON</p>';return}
+ const lat=L.lat.toFixed(2),lon=L.lon.toFixed(2),key='wx_'+lat+'_'+lon;
+ try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c&&Date.now()-c.t<45*60*1000){render(c.d,L);return}}catch(e){}
+ try{
+  const r=await fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`);
+  if(!r.ok)throw 0;const d=await r.json();
+  try{localStorage.setItem(key,JSON.stringify({t:Date.now(),d}))}catch(e){}
+  render(d,L);
+   var cc=document.getElementById('chgCity');if(cc)cc.onclick=function(){picker(L.name||'')};
+ }catch(e){card.innerHTML='<p class="msg">Could not load weather. Try again later.</p>'}
+}
+load();setInterval(load,(60+Math.floor(Math.random()*10))*60*1000);
+</script>
+</body>
+</html>

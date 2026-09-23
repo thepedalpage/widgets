@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Year Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFE4EC;--digit:#F06292;--text:#8D6E7A;--soft:#FFF5F8;--mid:#F8B4C8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:center;padding:2vw}
+.card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:5vw;width:100%;color:var(--text);position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
+.title{font-size:5vw;font-weight:600;color:var(--digit);text-align:center;position:relative}
+.sub{font-size:3.2vw;text-align:center;margin-bottom:3.5vw;position:relative}
+.big{font-size:14vw;font-weight:600;color:var(--digit);text-align:center;line-height:1;position:relative}
+.bar{height:5vw;background:var(--soft);border-radius:4vw;overflow:hidden;position:relative;margin-top:2.5vw}
+.fill{height:100%;background:var(--digit);border-radius:4vw;width:0;transition:width 1.2s ease}
+.meta{display:flex;justify-content:space-between;font-size:3.1vw;margin-top:2vw;position:relative}
+.rows{margin-top:4vw;position:relative}
+.r{margin-bottom:2.5vw}
+.rh{display:flex;justify-content:space-between;font-size:3.3vw;margin-bottom:1vw}
+.rh b{color:var(--digit);font-weight:500}
+.rb{height:3.2vw;background:var(--soft);border-radius:3vw;overflow:hidden}
+.rf{height:100%;background:var(--mid);border-radius:3vw;width:0;transition:width 1.2s ease}
+.note{text-align:center;font-size:3.1vw;margin-top:1.5vw;position:relative}
+</style><style>
+/* uniform size: card always fills the embed box */
+html,body{height:100%;margin:0}
+body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
+.card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+</head><body>
+<div class="card">
+ <div class="title" id="ttl">✨ Year Progress</div>
+ <div class="sub" id="sub">every day is a fresh page ♡</div>
+ <div class="big" id="pct">0%</div>
+ <div class="bar"><div class="fill" id="fill"></div></div>
+ <div class="meta"><span id="left">—</span><span id="done">—</span></div>
+ <div class="rows">
+  <div class="r"><div class="rh"><span>This month</span><b id="mp">0%</b></div><div class="rb"><div class="rf" id="mf"></div></div></div>
+  <div class="r"><div class="rh"><span>This week</span><b id="wp">0%</b></div><div class="rb"><div class="rf" id="wf"></div></div></div>
+  <div class="r"><div class="rh"><span>Today</span><b id="dp">0%</b></div><div class="rb"><div class="rf" id="df"></div></div></div>
+ </div>
+ <div class="note" id="note"></div>
+</div>
+<script>
+var P=new URLSearchParams(location.search);
+['bg','digit','text'].forEach(function(k){var v=P.get(k);if(v&&/^[0-9a-fA-F]{6}$/.test(v))document.documentElement.style.setProperty('--'+k,'#'+v)});
+function pct(a,b,c){return Math.max(0,Math.min(100,((b-a)/(c-a))*100))}
+function draw(){
+ var now=new Date(),y=now.getFullYear();
+ var ys=new Date(y,0,1),ye=new Date(y+1,0,1);
+ var p=pct(ys,now,ye);
+ document.getElementById('ttl').textContent='✨ '+y+' Progress';
+ document.getElementById('pct').textContent=p.toFixed(1)+'%';
+ document.getElementById('fill').style.width=p+'%';
+ var dayOfYear=Math.floor((now-ys)/86400000)+1;
+ var total=Math.round((ye-ys)/86400000);
+ document.getElementById('done').textContent='day '+dayOfYear+' of '+total;
+ document.getElementById('left').textContent=(total-dayOfYear)+' days left';
+ var ms=new Date(now.getFullYear(),now.getMonth(),1),me=new Date(now.getFullYear(),now.getMonth()+1,1);
+ var mp=pct(ms,now,me);
+ document.getElementById('mp').textContent=Math.round(mp)+'%';document.getElementById('mf').style.width=mp+'%';
+ var dow=(now.getDay()+6)%7;
+ var ws=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow);
+ var we=new Date(ws.getTime()+7*86400000);
+ var wp=pct(ws,now,we);
+ document.getElementById('wp').textContent=Math.round(wp)+'%';document.getElementById('wf').style.width=wp+'%';
+ var ds=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ var de=new Date(ds.getTime()+86400000);
+ var dp=pct(ds,now,de);
+ document.getElementById('dp').textContent=Math.round(dp)+'%';document.getElementById('df').style.width=dp+'%';
+ document.getElementById('note').textContent=now.toLocaleDateString('en-US',{weekday:'long',day:'numeric',month:'long'})+' ♡';
+}
+draw();setInterval(draw,60000);
+</script></body></html>

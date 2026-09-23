@@ -9,16 +9,30 @@ body{font-family:'Fredoka',system-ui,sans-serif;display:flex;align-items:flex-st
 .card{background:var(--bg);border-radius:6vw;padding:6vw 4vw;width:100%;text-align:center;color:var(--text);position:relative;overflow:hidden}
 .card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.35;top:-10vw;right:-8vw}
 .time{display:flex;justify-content:center;align-items:center;gap:2vw;position:relative}
-.box{background:var(--digit);color:#fff;font-size:13vw;font-weight:600;border-radius:4vw;padding:1vw 3vw;min-width:22vw;line-height:1.1}
-.colon{font-size:10vw;color:var(--digit);font-weight:600;animation:blink 1s steps(1) infinite}
+.box{background:var(--digit);color:#fff;font-size:clamp(31px,13vw,68px);font-weight:600;border-radius:4vw;padding:1vw 3vw;min-width:22vw;line-height:1.1}
+.colon{font-size:clamp(24px,10vw,52px);color:var(--digit);font-weight:600;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:.25}}
-.ampm{font-size:4.5vw;font-weight:500;color:var(--digit);align-self:flex-end;margin-bottom:2vw}
-.date{font-size:4.5vw;font-weight:500;margin-top:4vw;position:relative}
+.ampm{font-size:clamp(11px,4.5vw,23px);font-weight:500;color:var(--digit);align-self:flex-end;margin-bottom:2vw}
+.date{font-size:clamp(11px,4.5vw,23px);font-weight:500;margin-top:4vw;position:relative}
 </style><style>
 /* uniform size: card always fills the embed box */
 html,body{height:100%;margin:0}
 body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
 .card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+
+<style id="resp">
+/* --- responsive polish: keeps the desktop look, fixes narrow screens --- */
+*{min-width:0}
+html,body{max-width:100%;overflow-x:hidden}
+body{padding:clamp(5px,2vw,16px)}
+.card{width:100%;max-width:100%;box-sizing:border-box}
+img,svg,canvas,iframe{max-width:100%}
+input,select,button,textarea{max-width:100%;font-family:inherit}
+@media (max-width:768px){
+  body{padding:clamp(4px,1.6vw,10px)}
+  .card{border-radius:clamp(14px,6vw,26px)}
+}
 </style>
 </head><body>
 <div class="card"><div class="time"><div class="box" id="h">00</div><div class="colon">:</div><div class="box" id="m">00</div><div class="ampm" id="ap"></div></div><div class="date" id="date"></div></div>

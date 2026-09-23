@@ -8,15 +8,29 @@ html,body{background:transparent;height:100%}
 body{font-family:'Fredoka',system-ui,sans-serif;display:flex;align-items:flex-start;justify-content:center;padding:2vw}
 .card{background:var(--bg);border-radius:6vw;padding:7vw 6vw 6vw;width:100%;text-align:center;color:var(--text);position:relative;overflow:hidden}
 .card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.35;top:-10vw;right:-8vw}
-.tag{display:inline-block;background:var(--digit);color:#fff;font-size:3.6vw;font-weight:500;border-radius:5vw;padding:1vw 4vw;position:relative}
-.q{font-family:'Lora',Georgia,serif;font-style:italic;font-size:6.2vw;line-height:1.45;margin:5vw 0 4vw;position:relative;min-height:18vw;transition:opacity .4s}
-.heart{color:var(--digit);font-size:6vw;position:relative}
-.next{position:relative;margin-top:3vw;border:0;background:#fff;color:var(--digit);font-family:inherit;font-size:3.6vw;font-weight:500;border-radius:5vw;padding:1.6vw 5vw;cursor:pointer}
+.tag{display:inline-block;background:var(--digit);color:#fff;font-size:clamp(11px,3.6vw,19px);font-weight:500;border-radius:5vw;padding:1vw 4vw;position:relative}
+.q{font-family:'Lora',Georgia,serif;font-style:italic;font-size:clamp(15px,6.2vw,32px);line-height:1.45;margin:5vw 0 4vw;position:relative;min-height:18vw;transition:opacity .4s}
+.heart{color:var(--digit);font-size:clamp(14px,6vw,31px);position:relative}
+.next{position:relative;margin-top:3vw;border:0;background:#fff;color:var(--digit);font-family:inherit;font-size:clamp(11px,3.6vw,19px);font-weight:500;border-radius:5vw;padding:1.6vw 5vw;cursor:pointer}
 </style><style>
 /* uniform size: card always fills the embed box */
 html,body{height:100%;margin:0}
 body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
 .card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+
+<style id="resp">
+/* --- responsive polish: keeps the desktop look, fixes narrow screens --- */
+*{min-width:0}
+html,body{max-width:100%;overflow-x:hidden}
+body{padding:clamp(5px,2vw,16px)}
+.card{width:100%;max-width:100%;box-sizing:border-box}
+img,svg,canvas,iframe{max-width:100%}
+input,select,button,textarea{max-width:100%;font-family:inherit}
+@media (max-width:768px){
+  body{padding:clamp(4px,1.6vw,10px)}
+  .card{border-radius:clamp(14px,6vw,26px)}
+}
 </style>
 </head><body>
 <div class="card"><span class="tag">♡ today's reminder</span><div class="q" id="q"></div><div class="heart">♡</div><button class="next" id="n">another one ✨</button></div>

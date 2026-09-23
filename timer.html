@@ -9,22 +9,36 @@ body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:cen
 .card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:5vw;width:100%;color:var(--text);text-align:center;position:relative;overflow:hidden}
 .card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
 .tabs{display:flex;gap:2vw;justify-content:center;margin-bottom:4vw;position:relative}
-.tab{background:var(--soft);border:none;border-radius:5vw;padding:2vw 3.5vw;font-family:inherit;font-size:3.4vw;color:var(--text);cursor:pointer}
+.tab{background:var(--soft);border:none;border-radius:5vw;padding:2vw 3.5vw;font-family:inherit;font-size:clamp(11px,3.4vw,18px);color:var(--text);cursor:pointer}
 .tab.on{background:var(--digit);color:#fff}
-.ring{position:relative;width:56vw;height:56vw;margin:0 auto}
+.ring{position:relative;width:clamp(150px,56vw,320px);height:clamp(150px,56vw,320px);margin:0 auto}
 svg{transform:rotate(-90deg);width:100%;height:100%}
 .time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.time b{font-size:13vw;font-weight:600;color:var(--digit);line-height:1}
-.time span{font-size:3.2vw;margin-top:1vw}
+.time b{font-size:clamp(31px,13vw,68px);font-weight:600;color:var(--digit);line-height:1}
+.time span{font-size:clamp(11px,3.2vw,17px);margin-top:1vw}
 .ctrl{display:flex;gap:3vw;justify-content:center;margin-top:4vw;position:relative}
-.btn{border:none;border-radius:5vw;padding:3vw 7vw;font-family:inherit;font-size:4vw;cursor:pointer;background:var(--digit);color:#fff}
+.btn{border:none;border-radius:5vw;padding:3vw 7vw;font-family:inherit;font-size:clamp(11px,4vw,21px);cursor:pointer;background:var(--digit);color:#fff}
 .btn.alt{background:var(--soft);color:var(--text)}
-.count{font-size:3.4vw;margin-top:3vw;position:relative}
+.count{font-size:clamp(11px,3.4vw,18px);margin-top:3vw;position:relative}
 </style><style>
 /* uniform size: card always fills the embed box */
 html,body{height:100%;margin:0}
 body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
 .card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+
+<style id="resp">
+/* --- responsive polish: keeps the desktop look, fixes narrow screens --- */
+*{min-width:0}
+html,body{max-width:100%;overflow-x:hidden}
+body{padding:clamp(5px,2vw,16px)}
+.card{width:100%;max-width:100%;box-sizing:border-box}
+img,svg,canvas,iframe{max-width:100%}
+input,select,button,textarea{max-width:100%;font-family:inherit}
+@media (max-width:768px){
+  body{padding:clamp(4px,1.6vw,10px)}
+  .card{border-radius:clamp(14px,6vw,26px)}
+}
 </style>
 </head><body>
 <div class="card">

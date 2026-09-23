@@ -9,38 +9,52 @@ body{font-family:'Fredoka',system-ui,sans-serif;display:flex;justify-content:cen
 .card{background:var(--bg);border:1vw dashed var(--mid);border-radius:7vw;padding:5vw;width:100%;color:var(--text);position:relative;overflow:hidden;text-align:center}
 .card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.4;top:-12vw;right:-8vw}
 .vinyl{width:34vw;height:34vw;margin:0 auto 3vw;border-radius:50%;background:repeating-radial-gradient(circle,#5a3d48 0 1.2vw,#6d4b58 1.2vw 2vw);position:relative;box-shadow:0 1.5vw 4vw rgba(240,98,146,.3)}
-.vinyl:after{content:"♥";position:absolute;inset:0;margin:auto;width:13vw;height:13vw;border-radius:50%;background:var(--digit);color:#fff;font-size:6vw;display:flex;align-items:center;justify-content:center}
+.vinyl:after{content:"♥";position:absolute;inset:0;margin:auto;width:13vw;height:13vw;border-radius:50%;background:var(--digit);color:#fff;font-size:clamp(14px,6vw,31px);display:flex;align-items:center;justify-content:center}
 .playing .vinyl{animation:spin 4s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.notes{position:absolute;top:8vw;left:10vw;font-size:5vw;color:var(--digit);opacity:0}
+.notes{position:absolute;top:8vw;left:10vw;font-size:clamp(12px,5vw,26px);color:var(--digit);opacity:0}
 .playing .notes{animation:fl 2.5s ease-in-out infinite}
 .notes.n2{left:auto;right:12vw;top:14vw;animation-delay:1.2s!important}
 @keyframes fl{0%{opacity:0;transform:translateY(3vw)}40%{opacity:1}100%{opacity:0;transform:translateY(-6vw)}}
-.title{font-size:5.5vw;font-weight:600;color:var(--digit);position:relative}
-.sub{font-size:3.6vw;margin-bottom:3vw;position:relative}
+.title{font-size:clamp(13px,5.5vw,29px);font-weight:600;color:var(--digit);position:relative}
+.sub{font-size:clamp(11px,3.6vw,19px);margin-bottom:3vw;position:relative}
 .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;margin-bottom:3.5vw;position:relative}
-.mode{background:var(--soft);border:none;border-radius:4vw;padding:2.5vw 0;font-family:inherit;font-size:3.6vw;color:var(--text);cursor:pointer}
+.mode{background:var(--soft);border:none;border-radius:4vw;padding:2.5vw 0;font-family:inherit;font-size:clamp(11px,3.6vw,19px);color:var(--text);cursor:pointer}
 .mode.on{background:var(--digit);color:#fff}
 .ctrl{display:flex;align-items:center;gap:3vw;position:relative}
-.play{width:14vw;height:14vw;border-radius:50%;border:none;background:var(--digit);color:#fff;font-size:6vw;cursor:pointer;flex:none}
+.play{width:14vw;height:14vw;border-radius:50%;border:none;background:var(--digit);color:#fff;font-size:clamp(14px,6vw,31px);cursor:pointer;flex:none}
 input[type=range]{flex:1;accent-color:var(--digit)}
-.vol{font-size:4vw}
+.vol{font-size:clamp(11px,4vw,21px)}
 .tabs{display:flex;gap:2vw;justify-content:center;margin-bottom:3vw;position:relative}
-.tab{background:var(--soft);border:none;border-radius:5vw;padding:2vw 4vw;font-family:inherit;font-size:3.6vw;color:var(--text);cursor:pointer}
+.tab{background:var(--soft);border:none;border-radius:5vw;padding:2vw 4vw;font-family:inherit;font-size:clamp(11px,3.6vw,19px);color:var(--text);cursor:pointer}
 .tab.on{background:var(--digit);color:#fff}
 .hide{display:none!important}
 .sp{position:relative}
-.sp input{width:100%;border:.6vw solid var(--mid);border-radius:4vw;padding:2.5vw 3vw;font-family:inherit;font-size:3.4vw;color:var(--text);background:#fff;outline:none}
+.sp input{width:100%;border:.6vw solid var(--mid);border-radius:4vw;padding:2.5vw 3vw;font-family:inherit;font-size:clamp(11px,3.4vw,18px);color:var(--text);background:#fff;outline:none}
 .sp .row{display:flex;gap:2vw;margin-top:2vw}
-.sp button{flex:1;border:none;border-radius:4vw;padding:2.5vw;font-family:inherit;font-size:3.6vw;cursor:pointer;background:var(--digit);color:#fff}
+.sp button{flex:1;border:none;border-radius:4vw;padding:2.5vw;font-family:inherit;font-size:clamp(11px,3.6vw,19px);cursor:pointer;background:var(--digit);color:#fff}
 .sp button.alt{background:var(--soft);color:var(--text)}
-.sp .hint{font-size:3.1vw;margin:2vw 0}
+.sp .hint{font-size:clamp(11px,3.1vw,16px);margin:2vw 0}
 .sp iframe{width:100%;height:80vw;max-height:352px;border:0;border-radius:4vw;margin-top:2vw}
 </style><style>
 /* uniform size: card always fills the embed box */
 html,body{height:100%;margin:0}
 body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
 .card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+
+<style id="resp">
+/* --- responsive polish: keeps the desktop look, fixes narrow screens --- */
+*{min-width:0}
+html,body{max-width:100%;overflow-x:hidden}
+body{padding:clamp(5px,2vw,16px)}
+.card{width:100%;max-width:100%;box-sizing:border-box}
+img,svg,canvas,iframe{max-width:100%}
+input,select,button,textarea{max-width:100%;font-family:inherit}
+@media (max-width:768px){
+  body{padding:clamp(4px,1.6vw,10px)}
+  .card{border-radius:clamp(14px,6vw,26px)}
+}
 </style>
 </head><body>
 <div class="card" id="card">

@@ -13,36 +13,50 @@ body{font-family:'Fredoka',system-ui,sans-serif;display:flex;align-items:flex-st
 .card{background:var(--bg);border-radius:6vw;padding:4vw 4vw 2.5vw;width:100%;color:var(--text);position:relative;overflow:hidden}
 .card:before{content:"";position:absolute;width:30vw;height:30vw;border-radius:50%;background:#fff;opacity:.35;top:-10vw;right:-8vw}
 .top{display:flex;align-items:center;gap:3vw;position:relative}
-.icon{font-size:13vw;line-height:1;animation:float 3s ease-in-out infinite}
+.icon{font-size:clamp(31px,13vw,68px);line-height:1;animation:float 3s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2vw)}}
-.temp{font-size:10vw;font-weight:600;color:var(--digit);line-height:1}
-.temp small{font-size:4.5vw;font-weight:500}
-.desc{font-size:4vw;font-weight:500;margin-top:.8vw}
-.city{font-size:3.2vw;opacity:.85}
-.hl{margin-left:auto;text-align:right;font-size:3.4vw;line-height:1.7}
+.temp{font-size:clamp(24px,10vw,52px);font-weight:600;color:var(--digit);line-height:1}
+.temp small{font-size:clamp(11px,4.5vw,23px);font-weight:500}
+.desc{font-size:clamp(11px,4vw,21px);font-weight:500;margin-top:.8vw}
+.city{font-size:clamp(11px,3.2vw,17px);opacity:.85}
+.hl{margin-left:auto;text-align:right;font-size:clamp(11px,3.4vw,18px);line-height:1.7}
 .hl b{color:var(--digit);font-weight:500}
 .days{display:grid;grid-template-columns:repeat(5,1fr);gap:1.6vw;margin-top:3.5vw;position:relative}
 .day{background:var(--soft);border-radius:4vw;padding:2vw 0;text-align:center}
 .day.today{background:var(--digit);color:#fff}
 .day.today .t{color:#fff}
-.d{font-size:3.2vw;font-weight:500}
-.e{font-size:5.5vw;margin:.8vw 0}
-.t{font-size:3.2vw;color:var(--digit);font-weight:500}
-.credit{font-size:2.6vw;text-align:right;margin-top:2vw;opacity:.7;position:relative}
+.d{font-size:clamp(11px,3.2vw,17px);font-weight:500}
+.e{font-size:clamp(13px,5.5vw,29px);margin:.8vw 0}
+.t{font-size:clamp(11px,3.2vw,17px);color:var(--digit);font-weight:500}
+.credit{font-size:clamp(11px,2.6vw,14px);text-align:right;margin-top:2vw;opacity:.7;position:relative}
 .credit a{color:inherit}
 .cityrow{display:flex;gap:2vw;align-items:center;margin-top:2.5vw;position:relative}
-.cityrow input{flex:1;border:.6vw solid var(--mid);border-radius:4vw;padding:2.2vw 3vw;font-family:inherit;font-size:3.2vw;color:var(--text);background:#fff;outline:none}
-.cityrow button{border:none;border-radius:4vw;padding:2.2vw 4vw;font-family:inherit;font-size:3.2vw;background:var(--digit);color:#fff;cursor:pointer}
-.chg{background:none;border:none;color:var(--text);font-family:inherit;font-size:3vw;text-decoration:underline;cursor:pointer;margin-top:2vw;opacity:.85;position:relative}
+.cityrow input{flex:1;border:.6vw solid var(--mid);border-radius:4vw;padding:2.2vw 3vw;font-family:inherit;font-size:clamp(11px,3.2vw,17px);color:var(--text);background:#fff;outline:none}
+.cityrow button{border:none;border-radius:4vw;padding:2.2vw 4vw;font-family:inherit;font-size:clamp(11px,3.2vw,17px);background:var(--digit);color:#fff;cursor:pointer}
+.chg{background:none;border:none;color:var(--text);font-family:inherit;font-size:clamp(11px,3vw,16px);text-decoration:underline;cursor:pointer;margin-top:2vw;opacity:.85;position:relative}
 .hits{position:relative;margin-top:1.5vw;display:flex;flex-wrap:wrap;gap:1.5vw}
-.hits button{background:var(--soft);border:none;border-radius:3.5vw;padding:1.8vw 3vw;font-family:inherit;font-size:3vw;color:var(--text);cursor:pointer}
-.msg{font-size:4vw;text-align:center;padding:3vw}
+.hits button{background:var(--soft);border:none;border-radius:3.5vw;padding:1.8vw 3vw;font-family:inherit;font-size:clamp(11px,3vw,16px);color:var(--text);cursor:pointer}
+.msg{font-size:clamp(11px,4vw,21px);text-align:center;padding:3vw}
 </style>
 <style>
 /* uniform size: card always fills the embed box */
 html,body{height:100%;margin:0}
 body{min-height:100%;padding:2vw;display:flex;align-items:stretch;justify-content:center;box-sizing:border-box}
 .card{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;overflow:auto}
+</style>
+
+<style id="resp">
+/* --- responsive polish: keeps the desktop look, fixes narrow screens --- */
+*{min-width:0}
+html,body{max-width:100%;overflow-x:hidden}
+body{padding:clamp(5px,2vw,16px)}
+.card{width:100%;max-width:100%;box-sizing:border-box}
+img,svg,canvas,iframe{max-width:100%}
+input,select,button,textarea{max-width:100%;font-family:inherit}
+@media (max-width:768px){
+  body{padding:clamp(4px,1.6vw,10px)}
+  .card{border-radius:clamp(14px,6vw,26px)}
+}
 </style>
 </head>
 <body>
@@ -117,13 +131,13 @@ function picker(pre){
   if(v.length<2)return;
   var out=CITIES.filter(function(c){return c[0].toLowerCase().indexOf(v)===0}).slice(0,8);
   if(!out.length)out=CITIES.filter(function(c){return c[0].toLowerCase().indexOf(v)>-1}).slice(0,8);
-  if(!out.length){hits.innerHTML='<span style="font-size:3vw">City not in the list. Use ?lat=..&lon=..&name=.. in the link.</span>';return}
+  if(!out.length){hits.innerHTML='<span style="font-size:clamp(11px,3vw,16px)">City not in the list. Use ?lat=..&lon=..&name=.. in the link.</span>';return}
   out.forEach(function(c){
    var b=document.createElement('button');b.textContent=c[0]+' · '+c[1];
    b.onclick=function(){var obj={name:c[0],lat:c[2],lon:c[3]};saveCity(obj);load()};
    hits.appendChild(b)});
  }
- function safeFind(){ if(!CITIES){hits.innerHTML='<span style="font-size:3vw">loading cities…</span>';loadCities(find);return} find() }
+ function safeFind(){ if(!CITIES){hits.innerHTML='<span style="font-size:clamp(11px,3vw,16px)">loading cities…</span>';loadCities(find);return} find() }
  q.addEventListener('input',safeFind);document.getElementById('qb').onclick=safeFind;
  loadCities(function(){ if(q.value.trim().length>1) find() });
  document.getElementById('auto').onclick=function(){try{localStorage.removeItem('wx_city')}catch(e){};load()};
